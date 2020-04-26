@@ -6,6 +6,7 @@ class Store(models.Model):
     physical_address = models.CharField(max_length=100, default="NA")
     name = models.CharField(max_length=30, default="NA")
     timetable = JSONField()
+    besttime = models.CharField(max_length=10, default="8:00am")
     class Meta:
         ordering = ['id']
 

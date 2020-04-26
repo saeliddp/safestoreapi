@@ -17,5 +17,5 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class StoreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Store
-        fields = ['id', 'zipcode', 'physical_address', 'name', 'timetable']
+        fields = ['id', 'zipcode', 'physical_address', 'name', 'besttime']
         

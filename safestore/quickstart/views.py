@@ -9,9 +9,9 @@ from safestore.quickstart.serializers import UserSerializer, GroupSerializer, St
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from safestore.quickstart.mapinterface import get_stores_by_zip
+from safestore.quickstart.mapinterface import get_stores_by_zip, ll2zip
 import json
-
+import datetime
 
 
 
@@ -44,17 +44,57 @@ class StoreViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET', 'POST'])
 def fetchstore(request):
-    zip = request.query_params['zipcode']
+    lat = request.query_params['lat']
+    long = request.query_params['long']
+    zip = str(ll2zip(lat, long))
     stores = Store.objects.filter(zipcode=zip)
     if len(stores) == 0:
         results = get_stores_by_zip(zip)
         for storepair in results:
             if zip in storepair[1]:
-                tt = {'12:00am':0,'12:30am':0,'1:00am':0,'1:30am':0,'2:00am':0,'2:30am':0,'3:00am':0,'3:30am':0,'4:00am':0,'4:30am':0,'5:00am':0,'5:30am':0,'6:00am':0,'6:30am':0,'7:00am':0,'7:30am':0,'8:00am':0,'8:30am':0,'9:00am':0,'9:30am':0,'10:00am':0,'10:30am':0,'11:00am':0,'11:30am':0,'12:00pm':0,'12:30pm':0,'1:00pm':0,'1:30pm':0,'2:00pm':0,'2:30pm':0,'3:00pm':0,'3:30pm':0,'4:00pm':0,'4:30pm':0,'5:00pm':0,'5:30pm':0,'6:00pm':0,'6:30pm':0,'7:00pm':0,'7:30pm':0,'8:00pm':0,'8:30pm':0,'9:00pm':0,'9:30pm':0,'10:00pm':0,'10:30pm':0,'11:00pm':0,'11:30pm':0}
+                tt = {'8:00am':0,'8:30am':0,'9:00am':0,'9:30am':0,'10:00am':0,'10:30am':0,'11:00am':0,'11:30am':0,'12:00pm':0,'12:30pm':0,'1:00pm':0,'1:30pm':0,'2:00pm':0,'2:30pm':0,'3:00pm':0,'3:30pm':0,'4:00pm':0,'4:30pm':0,'5:00pm':0,'5:30pm':0,'6:00pm':0,'6:30pm':0,'7:00pm':0,'7:30pm':0,'8:00pm':0}
                 jtt = json.dumps(tt)
                 Store(name=storepair[0], zipcode=zip, physical_address=storepair[1], timetable=jtt).save()
         stores = Store.objects.filter(zipcode=zip)
         
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute
+    end = "jdlfk"
+    if hour >= 12:
+        end = "pm"
+    else:
+        end = "am"
+    minutestr = "30"
+    if minute >= 30:
+        hour += 1
+        minutestr = "00"
+    if hour >= 13:
+        hour -= 12
+    
+    endstr = str(hour) + ":" + minutestr + end
+
+    for s in stores:
+        jsontt = json.loads(s.timetable)
+        found = False
+        min = 100000
+        mintime = "8:00am"
+        for key in jsontt:
+            if key == endstr:
+                found = True
+                
+            if not found:
+                jsontt[key] = '0'
+            elif int(jsontt[key]) < min:
+                min = int(jsontt[key])
+                mintime = key
+        s.besttime = mintime
+        s.save()
+                
+                
+                
+        
+
     serializer = StoreSerializer(stores, many=True)
     return Response(serializer.data)
 
