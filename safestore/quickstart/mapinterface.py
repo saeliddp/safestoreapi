@@ -24,6 +24,6 @@ def get_stores_by_zip(zip):
     for i in range(len(y)): 
         #print(y[i]['name'])
         #print(y[i]['formatted_address'])
-        stores.append([y[i]['name'],y[i]['formatted_address']])
+        stores.append([y[i]['name'],y[i]['formatted_address'],y[i]['geometry']['location']['lat'],y[i]['geometry']['location']['lng']])
     #print(stores)
     return stores

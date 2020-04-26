@@ -54,7 +54,7 @@ def fetchstore(request):
             if zip in storepair[1]:
                 tt = {'8:00am':0,'8:30am':0,'9:00am':0,'9:30am':0,'10:00am':0,'10:30am':0,'11:00am':0,'11:30am':0,'12:00pm':0,'12:30pm':0,'1:00pm':0,'1:30pm':0,'2:00pm':0,'2:30pm':0,'3:00pm':0,'3:30pm':0,'4:00pm':0,'4:30pm':0,'5:00pm':0,'5:30pm':0,'6:00pm':0,'6:30pm':0,'7:00pm':0,'7:30pm':0,'8:00pm':0}
                 jtt = json.dumps(tt)
-                Store(name=storepair[0], zipcode=zip, physical_address=storepair[1], timetable=jtt).save()
+                Store(name=storepair[0], zipcode=zip, physical_address=storepair[1], timetable=jtt, latitude=storepair[2], longitude=storepair[3]).save()
         stores = Store.objects.filter(zipcode=zip)
         
     now = datetime.datetime.now()
